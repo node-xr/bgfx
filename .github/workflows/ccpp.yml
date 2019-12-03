@@ -19,7 +19,10 @@ jobs:
                   path: ./bimg
                   repository: bkaradzic/bimg
                   ref: refs/heads/master
-            - name: generate project files
+            # TODO: cache this dependency.
+            - name: Install build dependencies.
+              run: sudo apt-get install mesa-common-dev libglu1-mesa-dev
+            - name: Generate project files.
               run: make
-            - name: make
+            - name: Compile.
               run: make linux-release64
