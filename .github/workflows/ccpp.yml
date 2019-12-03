@@ -8,15 +8,15 @@ jobs:
         steps:
             - uses: actions/checkout@v1
               with:
-                  path: ${{ GITHUB_WORKSPACE }}/bgfx
+                  path: ./bgfx
             - uses: actions/checkout@v1
               with:
-                  path: ${{ GITHUB_WORKSPACE }}/bx
+                  path: ./bx
                   repository: bkaradzic/bx
                   ref: refs/heads/master
             - uses: actions/checkout@v1
               with:
-                  path: ${{ GITHUB_WORKSPACE }}/bimg
+                  path: ./bimg
                   repository: bkaradzic/bimg
                   ref: refs/heads/master
             - name: generate project files
