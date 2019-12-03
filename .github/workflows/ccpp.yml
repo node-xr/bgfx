@@ -21,7 +21,5 @@ jobs:
                   ref: refs/heads/master
             - name: generate project files
               run: make
-              working-directory: ./bgfx
             - name: make
               run: make linux-release64
-              working-directory: ./bgfx
