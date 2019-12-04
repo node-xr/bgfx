@@ -44,31 +44,26 @@ jobs:
         run: make
       - name: Compile.
         run: make ${{matrix.compiler}}-${{matrix.config}}
-  # release:
-  #   runs-on: ubuntu-latest
-  #   requires: [build]
-  #   steps:
-  #     # TODO: fix this thing.
-  #     - name: Compress build output
-  #       run: |
-  #         zip --junk-paths my-artifact ./bgfx/README.md
-  #     - name: Create Release
-  #       id: create_release
-  #       uses: actions/create-release@v1.0.0
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         tag_name: ${{ github.ref }}
-  #         release_name: Release ${{ github.ref }}
-  #         draft: false
-  #         prerelease: false
-  #     - name: Upload release artifact
-  #       id: upload-release-asset
-  #       uses: actions/upload-release-asset@v1.0.1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-  #         asset_path: ./my-artifact.zip
-  #         asset_name: my-artifact.zip
-  #         asset_content_type: application/zip
+  release:
+    runs-on: ubuntu-latest
+    requires: [build]
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          path: ./bgfx
+      - uses: actions/checkout@v1
+        with:
+          path: ./bx
+          repository: bkaradzic/bx
+          ref: refs/heads/master
+      - name: Copy include headers to build output.
+        run: |
+          mkdir -p ./output/include/bgfx ./output/include/bx
+          cp -r ./bgfx/include/* ./output/include/bgfx
+          cp -r ./bx/platform.h ./output/include/bx
+        with:
+          path: .
+      - uses: actions/upload-artifact@v1
+        with:
+          name: output
+          path: ./output
