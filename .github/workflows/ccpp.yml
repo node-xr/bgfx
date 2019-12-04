@@ -6,26 +6,20 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [mac, linux, windows]
-        # arch: [64]
-        # config: [release]
-        # image: [macos-latest, windows-latest, ubuntu-latest]
+        platform: [mac, linux]
         include:
           - platform: mac
-            arch: 64
             compiler: osx
-            config: release
+            config: release64
             image: macos-latest
-          - platform: windows
-            arch: 64
-            compiler: vs2019
-            config: release
-            image: windows-latest
           - platform: linux
-            arch: 64
             compiler: linux
-            config: release
+            config: release64
             image: ubuntu-latest
+          # - platform: windows
+          #   compiler: vs2017
+          #   config: release64
+          #   image: windows-latest
     runs-on: ${{ matrix.image }}
     steps:
       - uses: actions/checkout@v1
@@ -49,7 +43,7 @@ jobs:
       - name: Generate project files.
         run: make
       - name: Compile.
-        run: make ${{matrix.compiler}}-${{matrix.config}}${{matrix.arch}}
+        run: make ${{matrix.compiler}}-${{matrix.config}}
   # release:
   #   runs-on: ubuntu-latest
   #   requires: [build]
