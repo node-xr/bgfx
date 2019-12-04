@@ -19,29 +19,29 @@ jobs:
             arch: 64
             config: release
             image: ubuntu-latest
-      runs-on: ${{ matrix.image }}
-      steps:
-        - uses: actions/checkout@v1
-          with:
-            path: ./bgfx
-        - uses: actions/checkout@v1
-          with:
-            path: ./bx
-            repository: bkaradzic/bx
-            ref: refs/heads/master
-        - uses: actions/checkout@v1
-          with:
-            path: ./bimg
-            repository: bkaradzic/bimg
-            ref: refs/heads/master
-        # TODO: cache this dependency.
-        - name: Install build dependencies (Linux).
-          run: sudo apt-get install mesa-common-dev libglu1-mesa-dev
-          if: matrix.platform == 'linux'
-        - name: Generate project files.
-          run: make
-        - name: Compile.
-          run: make ${{matrix.platform}}-${{matrix.config}}${{matrix.arch}}
+    runs-on: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          path: ./bgfx
+      - uses: actions/checkout@v1
+        with:
+          path: ./bx
+          repository: bkaradzic/bx
+          ref: refs/heads/master
+      - uses: actions/checkout@v1
+        with:
+          path: ./bimg
+          repository: bkaradzic/bimg
+          ref: refs/heads/master
+      # TODO: cache this dependency.
+      - name: Install build dependencies (Linux).
+        run: sudo apt-get install mesa-common-dev libglu1-mesa-dev
+        if: matrix.platform == 'linux'
+      - name: Generate project files.
+        run: make
+      - name: Compile.
+        run: make ${{matrix.platform}}-${{matrix.config}}${{matrix.arch}}
   # release:
   #   runs-on: ubuntu-latest
   #   requires: [build]
