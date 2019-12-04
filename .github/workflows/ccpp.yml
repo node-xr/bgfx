@@ -3,26 +3,70 @@ name: C/C++ CI
 on: [push]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v1
-              with:
-                  path: ./bgfx
-            - uses: actions/checkout@v1
-              with:
-                  path: ./bx
-                  repository: bkaradzic/bx
-                  ref: refs/heads/master
-            - uses: actions/checkout@v1
-              with:
-                  path: ./bimg
-                  repository: bkaradzic/bimg
-                  ref: refs/heads/master
-            # TODO: cache this dependency.
-            - name: Install build dependencies.
-              run: sudo apt-get install mesa-common-dev libglu1-mesa-dev
-            - name: Generate project files.
-              run: make
-            - name: Compile.
-              run: make linux-release64
+  build:
+    strategy:
+      matrix:
+        include:
+          - platform: osx
+            arch: 64
+            config: release
+            image: macos-latest
+          - platform: win
+            arch: 64
+            config: release
+            image: windows-latest
+          - platform: linux
+            arch: 64
+            config: release
+            image: ubuntu-latest
+      runs-on: ${{ matrix.image }}
+      steps:
+        - uses: actions/checkout@v1
+          with:
+            path: ./bgfx
+        - uses: actions/checkout@v1
+          with:
+            path: ./bx
+            repository: bkaradzic/bx
+            ref: refs/heads/master
+        - uses: actions/checkout@v1
+          with:
+            path: ./bimg
+            repository: bkaradzic/bimg
+            ref: refs/heads/master
+        # TODO: cache this dependency.
+        - name: Install build dependencies (Linux).
+          run: sudo apt-get install mesa-common-dev libglu1-mesa-dev
+          if: matrix.platform == 'linux'
+        - name: Generate project files.
+          run: make
+        - name: Compile.
+          run: make ${{matrix.platform}}-${{matrix.config}}${{matrix.arch}}
+  # release:
+  #   runs-on: ubuntu-latest
+  #   requires: [build]
+  #   steps:
+  #     # TODO: fix this thing.
+  #     - name: Compress build output
+  #       run: |
+  #         zip --junk-paths my-artifact ./bgfx/README.md
+  #     - name: Create Release
+  #       id: create_release
+  #       uses: actions/create-release@v1.0.0
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         tag_name: ${{ github.ref }}
+  #         release_name: Release ${{ github.ref }}
+  #         draft: false
+  #         prerelease: false
+  #     - name: Upload release artifact
+  #       id: upload-release-asset
+  #       uses: actions/upload-release-asset@v1.0.1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+  #         asset_path: ./my-artifact.zip
+  #         asset_name: my-artifact.zip
+  #         asset_content_type: application/zip
