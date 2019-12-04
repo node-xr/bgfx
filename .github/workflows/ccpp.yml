@@ -18,7 +18,7 @@ jobs:
             image: macos-latest
           - platform: windows
             arch: 64
-            compiler: vs2017
+            compiler: vs2019
             config: release
             image: windows-latest
           - platform: linux
