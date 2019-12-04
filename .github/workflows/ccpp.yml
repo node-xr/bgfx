@@ -6,17 +6,24 @@ jobs:
   build:
     strategy:
       matrix:
+        platform: [mac, linux, windows]
+        # arch: [64]
+        # config: [release]
+        # image: [macos-latest, windows-latest, ubuntu-latest]
         include:
-          - platform: osx
+          - platform: mac
             arch: 64
+            compiler: osx
             config: release
             image: macos-latest
-          - platform: win
+          - platform: windows
             arch: 64
+            compiler: vs2017
             config: release
             image: windows-latest
           - platform: linux
             arch: 64
+            compiler: linux
             config: release
             image: ubuntu-latest
     runs-on: ${{ matrix.image }}
@@ -36,12 +43,13 @@ jobs:
           ref: refs/heads/master
       # TODO: cache this dependency.
       - name: Install build dependencies (Linux).
-        run: sudo apt-get install mesa-common-dev libglu1-mesa-dev
+        # See: https://bkaradzic.github.io/bgfx/build.html#linux
+        run: sudo apt-get install libgl1-mesa-dev x11proto-core-dev libx11-dev
         if: matrix.platform == 'linux'
       - name: Generate project files.
         run: make
       - name: Compile.
-        run: make ${{matrix.platform}}-${{matrix.config}}${{matrix.arch}}
+        run: make ${{matrix.compiler}}-${{matrix.config}}${{matrix.arch}}
   # release:
   #   runs-on: ubuntu-latest
   #   requires: [build]
