@@ -65,7 +65,7 @@ jobs:
           mkdir -p ./output/include/bgfx ./output/include/bx
           cp -r ./bgfx/include/* ./output/include/bgfx
           cp -r ./bx/platform.h ./output/include/bx
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/..
       - uses: actions/upload-artifact@v1
         with:
           name: output
