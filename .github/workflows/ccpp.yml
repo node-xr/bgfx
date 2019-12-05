@@ -3,50 +3,50 @@ name: C/C++ CI
 on: [push]
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        platform: [mac, linux]
-        include:
-          - platform: mac
-            compiler: osx
-            config: release64
-            image: macos-latest
-          - platform: linux
-            compiler: linux
-            config: release64
-            image: ubuntu-latest
-          # - platform: windows
-          #   compiler: vs2017
-          #   config: release64
-          #   image: windows-latest
-    runs-on: ${{ matrix.image }}
-    steps:
-      - uses: actions/checkout@v1
-        with:
-          path: ./bgfx
-      - uses: actions/checkout@v1
-        with:
-          path: ./bx
-          repository: bkaradzic/bx
-          ref: refs/heads/master
-      - uses: actions/checkout@v1
-        with:
-          path: ./bimg
-          repository: bkaradzic/bimg
-          ref: refs/heads/master
-      # TODO: cache this dependency.
-      - name: Install build dependencies (Linux).
-        # See: https://bkaradzic.github.io/bgfx/build.html#linux
-        run: sudo apt-get install libgl1-mesa-dev x11proto-core-dev libx11-dev
-        if: matrix.platform == 'linux'
-      - name: Generate project files.
-        run: make
-      - name: Compile.
-        run: make ${{matrix.compiler}}-${{matrix.config}}
+  # build:
+  #   strategy:
+  #     matrix:
+  #       platform: [mac, linux]
+  #       include:
+  #         - platform: mac
+  #           compiler: osx
+  #           config: release64
+  #           image: macos-latest
+  #         - platform: linux
+  #           compiler: linux
+  #           config: release64
+  #           image: ubuntu-latest
+  #         # - platform: windows
+  #         #   compiler: vs2017
+  #         #   config: release64
+  #         #   image: windows-latest
+  #   runs-on: ${{ matrix.image }}
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #       with:
+  #         path: ./bgfx
+  #     - uses: actions/checkout@v1
+  #       with:
+  #         path: ./bx
+  #         repository: bkaradzic/bx
+  #         ref: refs/heads/master
+  #     - uses: actions/checkout@v1
+  #       with:
+  #         path: ./bimg
+  #         repository: bkaradzic/bimg
+  #         ref: refs/heads/master
+  #     # TODO: cache this dependency.
+  #     - name: Install build dependencies (Linux).
+  #       # See: https://bkaradzic.github.io/bgfx/build.html#linux
+  #       run: sudo apt-get install libgl1-mesa-dev x11proto-core-dev libx11-dev
+  #       if: matrix.platform == 'linux'
+  #     - name: Generate project files.
+  #       run: make
+  #     - name: Compile.
+  #       run: make ${{matrix.compiler}}-${{matrix.config}}
   release:
     runs-on: ubuntu-latest
-    needs: build
+    #needs: build
     steps:
       - uses: actions/checkout@v1
         with:
@@ -58,10 +58,12 @@ jobs:
           ref: refs/heads/master
       - name: Copy include headers to build output.
         run: |
+          ls .
+          pwd
           mkdir -p ./output/include/bgfx ./output/include/bx
           cp -r ./bgfx/include/* ./output/include/bgfx
           cp -r ./bx/platform.h ./output/include/bx
-        working-directory: .
+        # working-directory: .
       - uses: actions/upload-artifact@v1
         with:
           name: output
