@@ -61,8 +61,8 @@ jobs:
       - name: Copy include headers to build output.
         run: |
           mkdir -p ./output/include/bgfx ./output/include/bx
-          cp -r ./bgfx/include/* ./output/include/bgfx
-          cp -r ./bx/include/platform.h ./output/include/bx
+          cp -r ./bgfx/include/bgfx/* ./output/include/bgfx
+          cp -r ./bx/include/bx/platform.h ./output/include/bx
         working-directory: ${{ github.workspace }}/..
       - uses: actions/upload-artifact@v1
         with:
