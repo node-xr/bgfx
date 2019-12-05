@@ -46,7 +46,7 @@ jobs:
         run: make ${{matrix.compiler}}-${{matrix.config}}
   release:
     runs-on: ubuntu-latest
-    requires: [build]
+    needs: build
     steps:
       - uses: actions/checkout@v1
         with:
@@ -61,8 +61,7 @@ jobs:
           mkdir -p ./output/include/bgfx ./output/include/bx
           cp -r ./bgfx/include/* ./output/include/bgfx
           cp -r ./bx/platform.h ./output/include/bx
-        with:
-          path: .
+        path: .
       - uses: actions/upload-artifact@v1
         with:
           name: output
